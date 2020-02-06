@@ -1,4 +1,4 @@
-DATA_IMAGES_BASEDIR = '../data/fashion-products/images/'
+DATA_IMAGES_BASEDIR = '../data/images/'
 
 
 class Wardrobe:
