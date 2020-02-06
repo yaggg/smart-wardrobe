@@ -67,6 +67,7 @@ class ClothesMapper:
 
     def __get_random_item_for_cat(self, map):
         look = []
+        error = False
         tops = set(TOPWEARS) & set(map)
         bottoms = set(BOTTOMWEARS) & set(map)
         outs = set(OUTWEARS) & set(map)
@@ -74,12 +75,18 @@ class ClothesMapper:
         accesses = set(ACCESSORIES) & set(map)
         if tops != set():
             look.append(('topwear', list(tops)[random.randint(0, len(tops)-1)]))
+        else:
+            error = True
         if bottoms != set():
             look.append(('bottomwear', list(bottoms)[random.randint(0, len(bottoms)-1)]))
+        else:
+            error = True
         if outs != set():
             look.append(('outwear', list(outs)[random.randint(0, len(outs)-1)]))
         if foots != set():
             look.append(('footwear', list(foots)[random.randint(0, len(foots)-1)]))
+        else:
+            error = True
         if accesses != set():
             look.append(('accessories', list(accesses)[random.randint(0, len(accesses)-1)]))
-        return look
+        return look, error

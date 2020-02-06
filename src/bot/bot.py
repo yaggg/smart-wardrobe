@@ -45,29 +45,41 @@ class Bot:
         img = load_sample(img_path)
         self.wardrobe.add_clothes(img_name, category)
 
-    def get_clothes_for_weather(self, bot, update):
+    def get_clothes_for_weather(self, bot, update, temp=None, season=None):
         img_path = "image1.jpg"
         img_id = update.message.photo[-1].file_id
         img = bot.get_file(img_id)
         img.download(img_path)
         img = load_sample(img_path)
         weather = self.model.get_weather(img)
-        season, temp = self.wapi.get_now_season(), self.wapi.get_temperature_by_city("Moscow, RU")
-        items = self.mapper.get_item_types_for_weather(season, temp, weather[0])
-
-        # getting pics for clothes items and sending to the user
-        for item in items:
-            update.message.reply_text(item[0])
-            pics_list = self.wardrobe.retrieve_clothes_for_type(item[1])
-            index = random.randint(0, len(pics_list)-1)
-            random_pic = pics_list[index]
-            bot.send_photo(update.effective_chat.id, open(random_pic, 'rb'))
+        if temp is None and season is None:
+            season, temp = self.wapi.get_now_season(), self.wapi.get_temperature_by_city("Moscow, RU")
+        else:
+            temp = float(temp)
+        items = self.mapper.get_item_types_for_weather(season, temp, weather[0])[0]
+        error = self.mapper.get_item_types_for_weather(season, temp, weather[0])[1]
+        if error:
+            update.message.reply_text('Введенные данные противоречивы. Попробуйте другое фото')
+        else:
+            update.message.reply_text('Погода сейчас: ' + weather[0])
+            # getting pics for clothes items and sending to the user
+            for item in items:
+                update.message.reply_text(item[0])
+                pics_list = self.wardrobe.retrieve_clothes_for_type(item[1])
+                index = random.randint(0, len(pics_list)-1)
+                random_pic = pics_list[index]
+                bot.send_photo(update.effective_chat.id, open(random_pic, 'rb'))
 
     def image_handler(self, bot, update):
         if update.message.caption.split()[0] == "/clothes":
             self.save_clothes(bot, update, update.message.caption.split()[1])
-        elif update.message.caption == "/look":
-            self.get_clothes_for_weather(bot, update)
+        elif update.message.caption.split()[0] == "/look":
+            try:
+                temp = update.message.caption.split()[1]
+                season = update.message.caption.split()[2]
+                self.get_clothes_for_weather(bot, update, temp, season)
+            except Exception:
+                self.get_clothes_for_weather(bot, update)
         else:
             update.message.reply_text("Unknown command")
 
