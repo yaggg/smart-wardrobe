@@ -17,14 +17,14 @@ class WeatherAPI:
     @staticmethod
     def get_now_season():
         date = datetime.now()
-        seasons = {'summer': (datetime(2020, 6, 21), datetime(2020, 9, 22)),
-                   'autumn': (datetime(2020, 9, 23), datetime(2020, 12, 20)),
-                   'spring': (datetime(2020, 3, 21), datetime(2020, 6, 20))}
+        seasons = {'Summer': (datetime(2020, 6, 21), datetime(2020, 9, 22)),
+                   'Autumn': (datetime(2020, 9, 23), datetime(2020, 12, 20)),
+                   'Spring': (datetime(2020, 3, 21), datetime(2020, 6, 20))}
         for season, (season_start, season_end) in seasons.items():
             if date >= season_start and date <= season_end:
                 return season
         else:
-            return 'winter'
+            return 'Winter'
 
     def get_temperature_by_city(self, city_name):
         print(self.base_url + city_name + '&appid=' + self.app_id)
