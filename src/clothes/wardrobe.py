@@ -9,6 +9,8 @@ class Wardrobe:
             'Tshirts': ['1163.jpg', '1529.jpg'],
             'Sweatshirts': ['13089.jpg', '23876.jpg'],
             'Sweaters': ['19540.jpg', '11529.jpg'],
+            # 'Sweatshirts': [],
+            # 'Sweaters': [],
             'Jeans': ['39386.jpg'],
             'Trousers': ['41629.jpg', '41625.jpg'],
             'Track Pants': ['21379.jpg', '17624.jpg'],
@@ -29,3 +31,6 @@ class Wardrobe:
 
     def retrieve_clothes_for_type(self, clothes_type):
         return [DATA_IMAGES_BASEDIR + item for item in self.clothes[clothes_type]]
+
+    def add_clothes(self, pic_name, category):
+        self.clothes[category].append(pic_name)

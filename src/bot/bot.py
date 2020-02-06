@@ -33,15 +33,17 @@ class Bot:
         self.updater.idle()
 
     @staticmethod
-    def get_help(self, bot, update):
+    def get_help(bot, update):
         update.message.reply_text("Send photo to get clothes recommendation")
 
-    def save_clothes(self, bot, update):
-        img_path = "clothes1.jpg"
+    def save_clothes(self, bot, update, category):
+        img_name = "{}_{}.jpg".format(update.effective_user.id, random.randint(0, 200000))
+        img_path = "../data/images/{}".format(img_name)
         img_id = update.message.photo[-1].file_id
         img = bot.get_file(img_id)
         img.download(img_path)
         img = load_sample(img_path)
+        self.wardrobe.add_clothes(img_name, category)
 
     def get_clothes_for_weather(self, bot, update):
         img_path = "image1.jpg"
@@ -51,7 +53,7 @@ class Bot:
         img = load_sample(img_path)
         weather = self.model.get_weather(img)
         season, temp = self.wapi.get_now_season(), self.wapi.get_temperature_by_city("Moscow, RU")
-        items = self.mapper.get_item_types_for_weather(season, temp, weather[0])\
+        items = self.mapper.get_item_types_for_weather(season, temp, weather[0])
 
         # getting pics for clothes items and sending to the user
         for item in items:
@@ -62,8 +64,8 @@ class Bot:
             bot.send_photo(update.effective_chat.id, open(random_pic, 'rb'))
 
     def image_handler(self, bot, update):
-        if update.message.caption == "/clothes":
-            self.save_clothes(bot, update)
+        if update.message.caption.split()[0] == "/clothes":
+            self.save_clothes(bot, update, update.message.caption.split()[1])
         elif update.message.caption == "/look":
             self.get_clothes_for_weather(bot, update)
         else:
